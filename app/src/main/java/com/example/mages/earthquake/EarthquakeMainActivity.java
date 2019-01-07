@@ -1,5 +1,6 @@
 package com.example.mages.earthquake;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -11,11 +12,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class EarthquakeMainActivity extends AppCompatActivity {
+public class EarthquakeMainActivity extends AppCompatActivity implements EarthquakeListFragment.OnListFragmentInteractionListener {
 
     private static final String TAG_LIST_FRAGMENT = "TAG_LIST_FRAGMENT";
 
     EarthquakeListFragment mEarthquakeListFragment;
+
+    EarthquakeViewModel earthquakeViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +37,15 @@ public class EarthquakeMainActivity extends AppCompatActivity {
             mEarthquakeListFragment = (EarthquakeListFragment) fm.findFragmentByTag(TAG_LIST_FRAGMENT);
         }
 
-        Date now = Calendar.getInstance().getTime();
-        ArrayList<Earthquake> dummyQuakes = new ArrayList<Earthquake>(0);
-        for (int i = 0; i< 30; i++) {
-            dummyQuakes.add(new Earthquake(String.valueOf(i), now, "San Jose", null, 7.3, null));
-        }
-        mEarthquakeListFragment.setEarthquakes(dummyQuakes);
+        earthquakeViewModel = ViewModelProviders.of(this).get(EarthquakeViewModel.class);
+    }
+
+    @Override
+    public void onListFragmentRefreshRequested() {
+        updateEarthquakes();
+    }
+
+    private void updateEarthquakes() {
+        earthquakeViewModel.loadEarthquakes();
     }
 }
