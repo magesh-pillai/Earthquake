@@ -3,7 +3,9 @@ package com.example.mages.earthquake;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -29,6 +31,8 @@ public class EarthquakeListFragment extends Fragment {
     private EarthquakeRecyclerViewAdapter mEarthquakeAdapter = new EarthquakeRecyclerViewAdapter(mEarthquakes);
 
     private OnListFragmentInteractionListener mListener;
+
+    private int nMinimumMagnitude = 0;
 
     public EarthquakeListFragment() {
     }
@@ -84,14 +88,25 @@ public class EarthquakeListFragment extends Fragment {
     }
 
     protected void setEarthquakes(List<Earthquake> earthquakes) {
-        mEarthquakes.clear();
-        mEarthquakeAdapter.notifyDataSetChanged();
+        updateFromPreferences();
+
         for (Earthquake earthquake : earthquakes) {
-            if (!mEarthquakes.contains(earthquake)) {
-                mEarthquakes.add(earthquake);
-                mEarthquakeAdapter.notifyItemInserted(mEarthquakes.indexOf(earthquake));
+            if (earthquake.getMagnitude() >= nMinimumMagnitude) {
+                if (!mEarthquakes.contains(earthquake)) {
+                    mEarthquakes.add(earthquake);
+                    mEarthquakeAdapter.notifyItemInserted(mEarthquakes.indexOf(earthquake));
+                }
             }
         }
+
+        if (mEarthquakes != null && mEarthquakes.size() > 0)
+            for(int i = mEarthquakes.size() - 1; i >= 0; i--) {
+                if (mEarthquakes.get(i).getMagnitude() < nMinimumMagnitude) {
+                    mEarthquakes.remove(i);
+                    mEarthquakeAdapter.notifyItemRemoved(i);
+                }
+            }
+
         mSwipeToRefreshView.setRefreshing(false);
     }
 
@@ -108,9 +123,31 @@ public class EarthquakeListFragment extends Fragment {
                 }
             }
         });
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        prefs.registerOnSharedPreferenceChangeListener(mPrefListener);
     }
 
     public interface OnListFragmentInteractionListener {
         void onListFragmentRefreshRequested();
     }
+
+    private void updateFromPreferences() {
+        SharedPreferences prefs =
+                PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        nMinimumMagnitude = Integer.parseInt(prefs.getString(PreferencesActivity.PREF_MIN_MAG, "3"));
+    }
+
+    private SharedPreferences.OnSharedPreferenceChangeListener mPrefListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (PreferencesActivity.PREF_MIN_MAG.equals(key)) {
+                List<Earthquake> earthquakes = earthquakeViewModel.getEarthquakes().getValue();
+                if (earthquakes != null)
+                    setEarthquakes(earthquakes);
+            }
+        }
+    };
+
 }
