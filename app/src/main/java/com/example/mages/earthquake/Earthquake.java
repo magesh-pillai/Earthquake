@@ -1,12 +1,19 @@
 package com.example.mages.earthquake;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.location.Location;
+import android.support.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+@Entity
 public class Earthquake {
+
+    @NonNull
+    @PrimaryKey
     private String mId;
     private Date mDate;
     private String mDetails;
