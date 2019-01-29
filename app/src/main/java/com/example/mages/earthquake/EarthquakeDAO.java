@@ -37,4 +37,10 @@ public interface EarthquakeDAO {
            "WHERE mDetails LIKE :query " +
            "ORDER BY mdate DESC")
     public LiveData<List<Earthquake>> searchEarthquakes(String query);
+
+    @Query("SELECT * " +
+           "FROM earthquake " +
+           "WHERE mId = :id " +
+           "LIMIT 1")
+    public LiveData<Earthquake> getEarthquake(String id);
 }
