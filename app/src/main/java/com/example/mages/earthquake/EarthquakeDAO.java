@@ -43,4 +43,7 @@ public interface EarthquakeDAO {
            "WHERE mId = :id " +
            "LIMIT 1")
     public LiveData<Earthquake> getEarthquake(String id);
+
+    @Query("SELECT * FROM earthquake ORDER BY mDate DESC")
+    List<Earthquake> loadAllEarthquakesSync();
 }
