@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.mages.earthquake"
         minSdkVersion 16
@@ -32,6 +32,7 @@ dependencies {
     implementation 'com.android.support:preference-v14:27.1.1'
     implementation 'android.arch.persistence.room:runtime:1.1.1'
     implementation 'android.arch.lifecycle:extensions:1.1.1'
+    implementation "android.arch.work:work-runtime:1.0.0-beta05"
     annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
     testImplementation 'junit:junit:4.12'
     testImplementation 'android.arch.persistence.room:testing:1.1.1'
