@@ -34,6 +34,8 @@ public class EarthquakeSearchResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_earthquake_search_result);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         RecyclerView recycleView = findViewById(R.id.search_result_list);
         recycleView.setLayoutManager(new LinearLayoutManager(this));
         recycleView.setAdapter(mEarthquakeAdapter);
