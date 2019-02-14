@@ -6,11 +6,18 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -30,6 +37,19 @@ public class EarthquakeMainActivity extends AppCompatActivity implements Earthqu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_earthquake_main);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        if (viewPager != null) {
+            PagerAdapter pagerAdapter = new EarthquakeTabsPagerAdapter(getSupportFragmentManager());
+            viewPager.setAdapter(pagerAdapter);
+
+            TabLayout tabLayout = findViewById(R.id.tab_layout);
+            tabLayout.setupWithViewPager(viewPager);
+        }
+
+        /*
         FragmentManager fm = this.getSupportFragmentManager();
 
         if (savedInstanceState == null) {
@@ -41,7 +61,7 @@ public class EarthquakeMainActivity extends AppCompatActivity implements Earthqu
         } else {
             mEarthquakeListFragment = (EarthquakeListFragment) fm.findFragmentByTag(TAG_LIST_FRAGMENT);
         }
-
+        */
         earthquakeViewModel = ViewModelProviders.of(this).get(EarthquakeViewModel.class);
     }
 
@@ -83,5 +103,36 @@ public class EarthquakeMainActivity extends AppCompatActivity implements Earthqu
         }
 
         return false;
+    }
+
+    class EarthquakeTabsPagerAdapter extends FragmentPagerAdapter {
+
+        EarthquakeTabsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int i) {
+            switch (i) {
+                case 0: return new EarthquakeListFragment();
+                case 1: return new EarthquakeMapFragment();
+                default: return null;
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case 0: getString(R.string.tab_list);
+                case 1: getString(R.string.tab_map);
+                default: return super.getPageTitle(position);
+            }
+        }
     }
 }
